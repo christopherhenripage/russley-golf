@@ -44,7 +44,7 @@ export default function RootLayout({
                   <span className="text-[9px] font-bold tracking-[0.15em] text-accent-green uppercase">Live</span>
                 </div>
                 <Link
-                  href="/"
+                  href="/dashboard"
                   className="text-text-secondary hover:text-text-primary transition-colors text-xs font-semibold tracking-wide uppercase px-3 py-1.5"
                 >
                   Dashboard

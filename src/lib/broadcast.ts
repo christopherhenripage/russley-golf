@@ -107,4 +107,46 @@ export function generateWeeklyRecap(
   return { headline, narratives, momentumCommentary };
 }
 
+/**
+ * Generate a dramatic match analysis for the latest round data.
+ * Returns a headline + narrative for use in "Latest Round Report" cards.
+ */
+export function generateMatchAnalysis(
+  roundData: (Round & { player_name: string; course_name: string })[],
+  analytics: PlayerAnalytics[]
+): { headline: string; narrative: string } {
+  if (roundData.length === 0) {
+    return {
+      headline: "NO INTELLIGENCE AVAILABLE",
+      narrative: "The data stream has gone dark. Our analysts await new field reports.",
+    };
+  }
+
+  const latest = roundData[roundData.length - 1];
+  const playerStats = analytics.find((a) => a.playerId === latest.player_id);
+  const archetype = ARCHETYPE_LABELS[playerStats?.performanceState || "Stable Veteran"] || "UNCLASSIFIED";
+
+  const headlineTemplates = [
+    `${latest.player_name.toUpperCase()} DEPLOYS A ${latest.score} AT ${latest.course_name.toUpperCase()} — MODELS RECALIBRATING`,
+    `FIELD REPORT: ${latest.player_name.toUpperCase()} REGISTERS ${latest.score} STROKES OF TACTICAL OUTPUT`,
+    `INTELLIGENCE BRIEF: ${latest.score} RECORDED BY ${latest.player_name.toUpperCase()} — CLASSIFICATION PENDING`,
+  ];
+
+  const headline = headlineTemplates[latest.score % headlineTemplates.length];
+
+  const shockText = playerStats?.recentShock && playerStats.recentShock !== "Expected"
+    ? `The Shock Factor Engine has classified this output as "${playerStats.recentShock.toUpperCase()}." `
+    : "";
+
+  const narrative =
+    `${latest.player_name} [${archetype}] has submitted tactical intelligence from ${latest.course_name}: ` +
+    `a raw output of ${latest.score}. ${shockText}` +
+    `RPR stands at ${playerStats?.rpr.toFixed(0) || "—"}. ` +
+    `The Volatility Index™ reads ${playerStats?.volatility.toFixed(2) || "0"}σ. ` +
+    `Momentum Vector: ${playerStats?.momentum.toFixed(2) || "0"}. ` +
+    `The analytics department ${playerStats && playerStats.momentum < -0.5 ? "is watching this trajectory with considerable interest" : "has noted this data point for the permanent record"}.`;
+
+  return { headline, narrative };
+}
+
 export { ARCHETYPE_LABELS, ARCHETYPE_DESCRIPTIONS };
