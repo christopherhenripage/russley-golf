@@ -252,7 +252,7 @@ export default function DashboardPage() {
             </p>
           </motion.div>
 
-          {/* Title Odds Distribution */}
+          {/* Title Odds — Donut Chart */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -260,27 +260,61 @@ export default function DashboardPage() {
             className="card-broadcast rounded-sm p-5"
           >
             <span className="section-label">Title Probability</span>
-            <div className="mt-4 space-y-3">
-              {[...analytics]
-                .sort((a, b) => b.titleOdds - a.titleOdds)
-                .map((player) => (
-                  <div key={player.playerId}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-bold tracking-wide">{player.playerName}</span>
-                      <span className="text-gold font-black tabular-nums text-xs">
-                        {player.titleOdds.toFixed(1)}%
-                      </span>
-                    </div>
-                    <div className="w-full h-1 bg-border rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-gradient-to-r from-gold-dark to-gold rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.min(player.titleOdds, 100)}%` }}
-                        transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      />
-                    </div>
+            <div className="mt-4 flex items-center gap-5">
+              {/* SVG Donut */}
+              <div className="relative shrink-0">
+                <svg width="120" height="120" viewBox="0 0 120 120" className="-rotate-90">
+                  {(() => {
+                    const sorted = [...analytics].sort((a, b) => b.titleOdds - a.titleOdds);
+                    const COLORS = ["#D4AF37", "#f0d060", "#a08020", "#777777", "#444444"];
+                    const circumference = 2 * Math.PI * 45;
+                    let cumulativeOffset = 0;
+                    return sorted.map((p, i) => {
+                      const pct = p.titleOdds / 100;
+                      const dashLength = circumference * pct;
+                      const offset = cumulativeOffset;
+                      cumulativeOffset += dashLength;
+                      return (
+                        <circle
+                          key={p.playerId}
+                          cx="60"
+                          cy="60"
+                          r="45"
+                          fill="none"
+                          stroke={COLORS[i % COLORS.length]}
+                          strokeWidth="16"
+                          strokeDasharray={`${dashLength} ${circumference - dashLength}`}
+                          strokeDashoffset={-offset}
+                          className="transition-all duration-1000"
+                        />
+                      );
+                    });
+                  })()}
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-[9px] text-text-muted tracking-wider uppercase">10K</div>
+                    <div className="text-[8px] text-text-muted tracking-wider uppercase">Sims</div>
                   </div>
-                ))}
+                </div>
+              </div>
+              {/* Legend */}
+              <div className="space-y-2 flex-1">
+                {(() => {
+                  const COLORS = ["#D4AF37", "#f0d060", "#a08020", "#777777", "#444444"];
+                  return [...analytics]
+                    .sort((a, b) => b.titleOdds - a.titleOdds)
+                    .map((p, i) => (
+                      <div key={p.playerId} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                          <span className="text-[10px] font-bold tracking-wide">{p.playerName}</span>
+                        </div>
+                        <span className="text-gold font-black tabular-nums text-xs">{p.titleOdds.toFixed(1)}%</span>
+                      </div>
+                    ));
+                })()}
+              </div>
             </div>
             <p className="text-[9px] text-text-muted mt-3 tracking-wide uppercase">
               Based on 10,000 simulated season outcomes

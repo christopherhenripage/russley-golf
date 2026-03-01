@@ -41,6 +41,7 @@ export default function LandingPage() {
 
   // Registration form
   const [regName, setRegName] = useState("");
+  const [regStyle, setRegStyle] = useState("");
   const [regSubmitting, setRegSubmitting] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
   const [regError, setRegError] = useState("");
@@ -274,6 +275,23 @@ export default function LandingPage() {
                       placeholder="e.g. Macca"
                       className="w-full bg-bg-surface border border-border rounded-sm px-4 py-3 text-text-primary focus:outline-none focus:border-gold transition-colors text-sm font-bold placeholder:text-text-muted/40"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] font-bold tracking-[0.15em] uppercase text-text-muted mb-2">
+                      Playing Style
+                    </label>
+                    <select
+                      value={regStyle}
+                      onChange={(e) => setRegStyle(e.target.value)}
+                      className="w-full bg-bg-surface border border-border rounded-sm px-4 py-3 text-text-primary focus:outline-none focus:border-gold transition-colors appearance-none text-sm font-bold"
+                    >
+                      <option value="">Select archetype...</option>
+                      <option value="aggressive">Aggressive — Grip It & Rip It</option>
+                      <option value="conservative">Conservative — Fairways & Greens</option>
+                      <option value="wild">Wild Card — Chaos Theory</option>
+                      <option value="grinder">The Grinder — Scramble & Save</option>
+                    </select>
                   </div>
 
                   <button
