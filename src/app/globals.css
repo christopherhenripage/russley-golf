@@ -6,20 +6,20 @@
   --color-gold-light: #f0d060;
   --color-gold-dark: #a08020;
   --color-gold-dim: rgba(212, 175, 55, 0.15);
-  --color-bg-primary: #0a0a0a;
-  --color-bg-card: #111111;
-  --color-bg-card-hover: #1a1a1a;
-  --color-bg-surface: #0d0d0d;
-  --color-bg-panel: #141414;
-  --color-border: #252525;
-  --color-border-bright: #3a3a3a;
+  --color-bg-primary: #051e08;
+  --color-bg-card: #0c3b16;
+  --color-bg-card-hover: #124a1e;
+  --color-bg-surface: #082510;
+  --color-bg-panel: #0a3012;
+  --color-border: #1a4d25;
+  --color-border-bright: #2a6635;
   --color-text-primary: #f5f5f5;
-  --color-text-secondary: #999999;
-  --color-text-muted: #555555;
-  --color-accent-green: #00FF41;
+  --color-text-secondary: #b0b0b0;
+  --color-text-muted: #5a7a5e;
+  --color-accent-green: #ffffff;
   --color-accent-red: #FF0000;
   --color-alert-red: #FF0000;
-  --color-perf-green: #00FF41;
+  --color-perf-green: #ffffff;
   --color-hot-orange: #FF6B00;
   --color-ice-blue: #00D4FF;
   --color-chaos-purple: #B026FF;
@@ -161,7 +161,7 @@ body {
 
 /* === BROADCAST HEADER BAR === */
 .broadcast-bar {
-  background: linear-gradient(90deg, var(--color-bg-primary) 0%, #161616 20%, #161616 80%, var(--color-bg-primary) 100%);
+  background: linear-gradient(90deg, var(--color-bg-primary) 0%, #0a3012 20%, #0a3012 80%, var(--color-bg-primary) 100%);
   border-bottom: 3px solid var(--color-gold);
 }
 
