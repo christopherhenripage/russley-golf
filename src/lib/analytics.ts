@@ -43,18 +43,14 @@ export function buildAdjustedRounds(
  */
 export function rollingWeightedAverage(adjustedScores: number[]): number {
   if (adjustedScores.length === 0) return 0;
-
-  // Scores should be sorted newest-first
   const sorted = [...adjustedScores];
   let totalWeight = 0;
   let weightedSum = 0;
-
   for (let i = 0; i < sorted.length; i++) {
     const weight = i < 5 ? 1.5 : 1.0;
     weightedSum += sorted[i] * weight;
     totalWeight += weight;
   }
-
   return weightedSum / totalWeight;
 }
 
@@ -64,7 +60,6 @@ export function rollingWeightedAverage(adjustedScores: number[]): number {
 export function volatilityIndex(adjustedScores: number[]): number {
   const recent = adjustedScores.slice(0, 8);
   if (recent.length < 2) return 0;
-
   const mean = recent.reduce((a, b) => a + b, 0) / recent.length;
   const variance =
     recent.reduce((sum, s) => sum + (s - mean) ** 2, 0) / (recent.length - 1);
@@ -78,26 +73,16 @@ export function volatilityIndex(adjustedScores: number[]): number {
 export function momentum(adjustedScores: number[]): number {
   const recent = adjustedScores.slice(0, 5);
   if (recent.length < 2) return 0;
-
   const n = recent.length;
-  // x = 0 (most recent) to n-1 (oldest)
-  // We reverse so x=0 is oldest, x=n-1 is newest for natural slope direction
   const reversed = [...recent].reverse();
-
-  let sumX = 0;
-  let sumY = 0;
-  let sumXY = 0;
-  let sumXX = 0;
-
+  let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
   for (let i = 0; i < n; i++) {
     sumX += i;
     sumY += reversed[i];
     sumXY += i * reversed[i];
     sumXX += i * i;
   }
-
-  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-  return slope; // Negative = improving, positive = declining
+  return (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
 }
 
 /**
@@ -125,7 +110,8 @@ export function shockLabel(shock: number): ShockLabel {
 }
 
 /**
- * Determine performance state based on momentum, volatility, and recent form.
+ * Determine performance archetype based on momentum, volatility, and recent form.
+ * These are the broadcast-ready designations.
  */
 export function performanceState(
   momentumVal: number,
@@ -133,19 +119,19 @@ export function performanceState(
   recentAvg: number,
   careerAvg: number
 ): PerformanceState {
-  const formDelta = recentAvg - careerAvg; // negative = playing better than average
+  const formDelta = recentAvg - careerAvg;
 
-  // High volatility + erratic = Chaos Merchant
-  if (volatilityVal > 5) return "Chaos Merchant";
+  // High volatility = The Chaos Merchant
+  if (volatilityVal > 4) return "Chaos Merchant";
 
-  // Strong negative momentum (improving rapidly) + good recent form
-  if (momentumVal < -1.5 && formDelta < 0) return "Heater";
+  // Strong negative momentum (improving rapidly) + good recent form = On Fire
+  if (momentumVal < -1.0 && formDelta < 0) return "Heater";
 
-  // Low volatility + consistent
+  // Low volatility + ultra consistent = Ice Veins
   if (volatilityVal < 2.5 && Math.abs(momentumVal) < 0.5) return "Ice Veins";
 
-  // Positive momentum (declining) + worse than average
-  if (momentumVal > 1.0 && formDelta > 2) return "Regression Watch";
+  // Positive momentum (declining) + worse than average = Regression Watch
+  if (momentumVal > 0.8 && formDelta > 1) return "Regression Watch";
 
   return "Stable Veteran";
 }
@@ -159,13 +145,32 @@ export function careerAverage(adjustedScores: number[]): number {
 }
 
 /**
+ * Psychological Edge Index™ — head-to-head dominance metric.
+ * Combines win rate, stroke differential, and consistency of victory.
+ * Range: -100 (completely dominated) to +100 (total dominance).
+ */
+export function psychologicalEdge(
+  winPct: number,
+  avgStrokeDiff: number,
+  totalRounds: number
+): number {
+  if (totalRounds === 0) return 0;
+  // Win rate component: (winPct - 50) scaled to [-50, 50]
+  const winComponent = (winPct - 50);
+  // Stroke diff component: capped at +/-10, scaled to [-50, 50]
+  const strokeComponent = Math.max(-10, Math.min(10, -avgStrokeDiff)) * 5;
+  // Confidence multiplier: more rounds = more reliable (caps at 1.0 after 5 rounds)
+  const confidence = Math.min(1.0, totalRounds / 5);
+  return Math.round((winComponent * 0.6 + strokeComponent * 0.4) * confidence);
+}
+
+/**
  * Average score per course per player.
  */
 export function courseStatsForPlayer(
   adjustedRounds: AdjustedRound[]
 ): CourseStats[] {
   const grouped = new Map<string, { name: string; scores: number[] }>();
-
   for (const ar of adjustedRounds) {
     const key = ar.course.id;
     if (!grouped.has(key)) {
@@ -173,7 +178,6 @@ export function courseStatsForPlayer(
     }
     grouped.get(key)!.scores.push(ar.round.score);
   }
-
   return Array.from(grouped.entries()).map(([courseId, { name, scores }]) => ({
     courseId,
     courseName: name,
@@ -207,7 +211,6 @@ export function courseAdaptability(courseStats: CourseStats[]): number {
   const variance =
     avgs.reduce((sum, a) => sum + (a - mean) ** 2, 0) / (avgs.length - 1);
   const stdev = Math.sqrt(variance);
-  // Scale: 100 = perfectly adaptable, lower = less adaptable
   return Math.max(0, 100 - stdev * 10);
 }
 
@@ -223,14 +226,12 @@ export function buildRivalryMatrix(
   const playerMap = new Map(players.map((p) => [p.id, p.name]));
   const rivalries: RivalryRecord[] = [];
 
-  // Group rounds by date
   const byDate = new Map<string, Round[]>();
   for (const r of rounds) {
     if (!byDate.has(r.date)) byDate.set(r.date, []);
     byDate.get(r.date)!.push(r);
   }
 
-  // For each pair of players
   const playerIds = players.map((p) => p.id);
   for (let i = 0; i < playerIds.length; i++) {
     for (let j = i + 1; j < playerIds.length; j++) {
@@ -260,14 +261,17 @@ export function buildRivalryMatrix(
       }
 
       if (matchCount > 0) {
+        const aWinPct = (aWins / matchCount) * 100;
+        const avgDiff = totalDiff / matchCount;
         rivalries.push({
           playerAId: a,
           playerBId: b,
           playerAName: playerMap.get(a) || "Unknown",
           playerBName: playerMap.get(b) || "Unknown",
-          playerAWinPct: (aWins / matchCount) * 100,
-          avgStrokeDifferential: totalDiff / matchCount,
+          playerAWinPct: aWinPct,
+          avgStrokeDifferential: avgDiff,
           totalRounds: matchCount,
+          psychEdgeA: psychologicalEdge(aWinPct, avgDiff, matchCount),
         });
       }
     }

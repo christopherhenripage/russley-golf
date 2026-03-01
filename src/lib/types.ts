@@ -108,6 +108,7 @@ export interface RivalryRecord {
   playerAWinPct: number;
   avgStrokeDifferential: number;
   totalRounds: number;
+  psychEdgeA: number;
 }
 
 export interface CourseStats {
