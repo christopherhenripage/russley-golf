@@ -279,7 +279,7 @@ export default function DashboardPage() {
                 <svg width="110" height="110" viewBox="0 0 120 120" className="-rotate-90">
                   {(() => {
                     const sorted = [...analytics].sort((a, b) => b.titleOdds - a.titleOdds);
-                    const COLORS = ["#D4AF37", "#f0d060", "#a08020", "#666666", "#444444"];
+                    const COLORS = ["#D4AF37", "#f0d060", "#a08020", "#2a6635", "#1a4d25"];
                     const circumference = 2 * Math.PI * 45;
                     let cumulativeOffset = 0;
                     return sorted.map((p, i) => {
@@ -312,7 +312,7 @@ export default function DashboardPage() {
               </div>
               <div className="space-y-2.5 flex-1">
                 {(() => {
-                  const COLORS = ["#D4AF37", "#f0d060", "#a08020", "#666666", "#444444"];
+                  const COLORS = ["#D4AF37", "#f0d060", "#a08020", "#2a6635", "#1a4d25"];
                   return [...analytics]
                     .sort((a, b) => b.titleOdds - a.titleOdds)
                     .map((p, i) => (
