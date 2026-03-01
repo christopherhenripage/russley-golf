@@ -2,15 +2,54 @@
 
 import type { PlayerAnalytics, WeeklyRecap } from "@/lib/types";
 
-const SHAME_FAME_HEADLINES = [
-  "SOURCES: Performance Forensics Team Has Been Deployed To Russley",
-  "BREAKING: Monte Carlo Engine Requests Additional Compute Budget After Latest Results",
-  "DEVELOPING: One Player's Volatility Index Has Triggered Three Separate Circuit Breakers",
-  "ALERT: The Psychological Warfare Division Confirms 'Things Are Getting Personal'",
-  "EXCLUSIVE: Senior Analyst Describes Current RPR Distribution As 'Frankly Threatening'",
-  "REPORT: The Algorithms Are Watching. The Algorithms Are Always Watching.",
-  "UNCONFIRMED: A Player's Regression Coefficient Has Achieved Sentience",
-  "UPDATE: Course Conditions Classified As 'Tactically Hostile' By Intelligence Bureau",
+function generatePlayerHeadlines(analytics: PlayerAnalytics[]): string[] {
+  const headlines: string[] = [];
+  const ranked = [...analytics].sort((a, b) => b.rpr - a.rpr);
+
+  // Player-specific headlines
+  for (const p of analytics) {
+    if (p.performanceState === "Heater") {
+      headlines.push(`🔥 ${p.playerName.toUpperCase()}'s RPR trajectory classified as "unsustainable" by three independent models`);
+    }
+    if (p.performanceState === "Chaos Merchant") {
+      headlines.push(`🌪️ ALERT: ${p.playerName.toUpperCase()}'s Volatility Index has triggered a formal review by the Analytics Desk`);
+    }
+    if (p.performanceState === "Regression Watch") {
+      headlines.push(`📉 DEVELOPING: ${p.playerName.toUpperCase()} enters Regression Watch — Momentum Vector negative for consecutive weeks`);
+    }
+    if (p.recentShock === "Historic Collapse") {
+      headlines.push(`🚨 BREAKING: ${p.playerName.toUpperCase()}'s last round classified as HISTORIC COLLAPSE — Performance Forensics team deployed`);
+    }
+    if (p.recentShock === "Statistical Event") {
+      headlines.push(`⚠️ ${p.playerName.toUpperCase()} generates Statistical Anomaly — prediction models scrambling to recalibrate`);
+    }
+  }
+
+  // Leader-specific
+  if (ranked[0]) {
+    headlines.push(`🏆 ${ranked[0].playerName.toUpperCase()} maintains stranglehold on #1 — RPR ${ranked[0].rpr.toFixed(0)} — sources say rivals are "concerned"`);
+  }
+
+  // Rivalry headline
+  if (ranked.length >= 2) {
+    const gap = ranked[0].rpr - ranked[1].rpr;
+    if (gap < 30) {
+      headlines.push(`⚔️ TITLE RACE: Only ${gap.toFixed(0)} RPR separating ${ranked[0].playerName} and ${ranked[1].playerName} — the models are calling this "a coin flip with extra steps"`);
+    }
+  }
+
+  return headlines;
+}
+
+const STATIC_HEADLINES = [
+  "SOURCES: Performance Forensics Team has been deployed to Russley Golf Club",
+  "BREAKING: Monte Carlo engine requests additional compute budget after latest results",
+  "DEVELOPING: Psychological Warfare Division confirms 'things are getting personal'",
+  "EXCLUSIVE: Senior analyst describes current RPR distribution as 'frankly threatening'",
+  "REPORT: The algorithms are watching. The algorithms are always watching.",
+  "UNCONFIRMED: A player's regression coefficient has achieved sentience and is 'asking questions'",
+  "UPDATE: Course conditions classified as 'tactically hostile' by RSPI Intelligence Bureau",
+  "ALERT: Three-putt on 18 triggers automatic recalculation of 847 statistical parameters",
 ];
 
 export default function Ticker({
@@ -22,11 +61,13 @@ export default function Ticker({
 }) {
   const ranked = [...analytics].sort((a, b) => b.rpr - a.rpr);
   const highVol = [...analytics].sort((a, b) => b.volatility - a.volatility)[0];
+  const playerHeadlines = generatePlayerHeadlines(analytics);
 
   const items = [
     `RSPI POWER RANKING: ${ranked.map((p, i) => `#${i + 1} ${p.playerName}`).join(" | ")}`,
+    ...playerHeadlines.slice(0, 4),
     recap.momentumCommentary,
-    ...SHAME_FAME_HEADLINES.slice(0, 3),
+    ...STATIC_HEADLINES.slice(0, 3),
     `VOLATILITY WATCH: ${highVol?.playerName || "N/A"} leads at ${highVol?.volatility.toFixed(2) || "0"}σ — models recalibrating`,
     ...recap.narratives.map((n) => n.substring(0, 140) + "..."),
   ];
