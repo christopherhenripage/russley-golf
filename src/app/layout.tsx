@@ -15,21 +15,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen antialiased">
-        {/* Top broadcast strip */}
-        <div className="bg-gold h-[2px]" />
+        {/* Top broadcast strip — BOLD */}
+        <div className="bg-gold h-[4px]" />
         <nav className="broadcast-bar sticky top-0 z-50">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-14">
+            <div className="flex items-center justify-between h-16">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="relative">
-                  <span className="text-2xl">🏆</span>
-                </div>
+                <span className="text-3xl">🏆</span>
                 <div className="leading-none">
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-gold font-black text-sm tracking-tight group-hover:text-gold-light transition-colors">
+                  <div className="flex items-center gap-2.5">
+                    <h1 className="text-gold font-black text-lg tracking-tight group-hover:text-gold-light transition-colors">
                       RSPI
                     </h1>
-                    <span className="text-[9px] font-bold tracking-[0.2em] text-text-muted uppercase">
+                    <span className="text-[10px] font-black tracking-[0.2em] text-text-secondary uppercase hidden sm:inline">
                       Senior Performance Index
                     </span>
                   </div>
@@ -38,20 +36,21 @@ export default function RootLayout({
                   </p>
                 </div>
               </Link>
-              <div className="flex items-center gap-1">
-                <div className="flex items-center gap-1.5 mr-4">
-                  <div className="w-1.5 h-1.5 rounded-full bg-accent-green live-dot" />
-                  <span className="text-[9px] font-bold tracking-[0.15em] text-accent-green uppercase">Live</span>
+              <div className="flex items-center gap-2">
+                {/* LIVE badge — prominent */}
+                <div className="flex items-center gap-2 mr-3 bg-accent-green/10 border border-accent-green/30 px-3 py-1.5 rounded-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-accent-green live-dot" />
+                  <span className="text-[11px] font-black tracking-[0.15em] text-accent-green uppercase">Live</span>
                 </div>
                 <Link
                   href="/dashboard"
-                  className="text-text-secondary hover:text-text-primary transition-colors text-xs font-semibold tracking-wide uppercase px-3 py-1.5"
+                  className="text-text-secondary hover:text-gold transition-colors text-xs font-bold tracking-wider uppercase px-3 py-2"
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/add-round"
-                  className="bg-gold/10 border border-gold/30 text-gold hover:bg-gold/20 hover:border-gold/50 px-3 py-1.5 text-xs font-bold tracking-wide uppercase transition-all"
+                  className="bg-gold/15 border-2 border-gold/40 text-gold hover:bg-gold/25 hover:border-gold/60 px-4 py-2 text-xs font-black tracking-wider uppercase transition-all"
                 >
                   Submit Intel
                 </Link>
@@ -63,10 +62,13 @@ export default function RootLayout({
           {children}
         </main>
         {/* Bottom broadcast strip */}
-        <div className="bg-gold/20 h-[1px] mt-12" />
-        <footer className="text-center py-6">
-          <p className="text-[10px] text-text-muted tracking-[0.2em] uppercase">
+        <div className="gold-divider mt-12" />
+        <footer className="text-center py-8">
+          <p className="text-[11px] text-text-muted tracking-[0.2em] uppercase font-bold">
             The Russley Senior Performance Index™ &mdash; A Division of Absolutely Unnecessary Analytics Inc.
+          </p>
+          <p className="text-[9px] text-text-muted/60 tracking-[0.15em] uppercase mt-2">
+            Christchurch, New Zealand &mdash; Est. 2026
           </p>
         </footer>
       </body>

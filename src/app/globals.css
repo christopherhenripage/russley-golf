@@ -10,11 +10,12 @@
   --color-bg-card: #111111;
   --color-bg-card-hover: #1a1a1a;
   --color-bg-surface: #0d0d0d;
-  --color-border: #1f1f1f;
-  --color-border-bright: #333333;
-  --color-text-primary: #f0f0f0;
-  --color-text-secondary: #777777;
-  --color-text-muted: #444444;
+  --color-bg-panel: #141414;
+  --color-border: #252525;
+  --color-border-bright: #3a3a3a;
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #999999;
+  --color-text-muted: #555555;
   --color-accent-green: #00FF41;
   --color-accent-red: #FF0000;
   --color-alert-red: #FF0000;
@@ -38,7 +39,7 @@ body {
 /* === BROADCAST CARD SYSTEM === */
 .card-broadcast {
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   position: relative;
   overflow: hidden;
 }
@@ -48,7 +49,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
   background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -57,12 +58,19 @@ body {
   opacity: 1;
 }
 
-/* === PRESTIGE GOLD GLOW === */
+/* === PRESTIGE GOLD GLOW — HEAVY === */
 .glow-gold {
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.06), 0 0 80px rgba(212, 175, 55, 0.03);
+  box-shadow:
+    0 0 30px rgba(212, 175, 55, 0.15),
+    0 0 60px rgba(212, 175, 55, 0.08),
+    inset 0 1px 0 rgba(212, 175, 55, 0.1);
 }
 .glow-gold-intense {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.12), 0 0 60px rgba(212, 175, 55, 0.06);
+  box-shadow:
+    0 0 40px rgba(212, 175, 55, 0.25),
+    0 0 80px rgba(212, 175, 55, 0.12),
+    0 0 120px rgba(212, 175, 55, 0.06),
+    inset 0 1px 0 rgba(212, 175, 55, 0.15);
 }
 
 /* === RANK NUMBER — GIANT BROADCAST STYLE === */
@@ -76,59 +84,76 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+  filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.5));
 }
 .rank-number-leader {
-  font-size: 3.5rem;
+  font-size: 4rem;
   background: linear-gradient(180deg, #FFFFFF 0%, #FFE89A 30%, #D4AF37 60%, #A08020 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.5));
+  filter: drop-shadow(0 6px 12px rgba(212, 175, 55, 0.6));
 }
 
-/* === SHOCK ALERT SYSTEM === */
+/* === SHOCK ALERT SYSTEM — DRAMATIC === */
 @keyframes shock-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(255, 0, 0, 0.2); }
+  50% { opacity: 0.7; box-shadow: 0 0 40px rgba(255, 0, 0, 0.4); }
 }
 @keyframes shock-slide {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(0); }
+  0% { transform: translateX(-100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes shock-border-pulse {
+  0%, 100% { border-color: rgba(255, 0, 0, 0.6); }
+  50% { border-color: rgba(255, 0, 0, 1); }
 }
 .shock-alert {
-  animation: shock-slide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: shock-slide 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .shock-alert-pulse {
-  animation: shock-pulse 2s ease-in-out infinite;
+  animation: shock-pulse 1.5s ease-in-out infinite;
+}
+.shock-border-pulse {
+  animation: shock-border-pulse 2s ease-in-out infinite;
 }
 
-/* === MOMENTUM ANIMATIONS === */
+/* === MOMENTUM ANIMATIONS — MORE DRAMATIC === */
 @keyframes flame-flicker {
   0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
-  25% { transform: translateY(-2px) scale(1.05); opacity: 0.9; }
-  50% { transform: translateY(-4px) scale(1.1); opacity: 1; }
-  75% { transform: translateY(-1px) scale(1.02); opacity: 0.95; }
+  25% { transform: translateY(-3px) scale(1.08); opacity: 0.85; }
+  50% { transform: translateY(-6px) scale(1.15); opacity: 1; }
+  75% { transform: translateY(-2px) scale(1.04); opacity: 0.9; }
 }
 @keyframes decline-sink {
   0%, 100% { transform: translateY(0); opacity: 1; }
-  50% { transform: translateY(3px); opacity: 0.7; }
+  50% { transform: translateY(4px); opacity: 0.5; }
 }
 @keyframes ice-shimmer {
   0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.3); }
+  50% { filter: brightness(1.5); }
 }
-.momentum-heater { animation: flame-flicker 1.2s ease-in-out infinite; }
-.momentum-decline { animation: decline-sink 2s ease-in-out infinite; }
-.momentum-ice { animation: ice-shimmer 3s ease-in-out infinite; }
+@keyframes momentum-glow-up {
+  0%, 100% { text-shadow: 0 0 8px rgba(0, 255, 65, 0.3); }
+  50% { text-shadow: 0 0 20px rgba(0, 255, 65, 0.6); }
+}
+@keyframes momentum-glow-down {
+  0%, 100% { text-shadow: 0 0 8px rgba(255, 0, 0, 0.3); }
+  50% { text-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+}
+.momentum-heater { animation: flame-flicker 1s ease-in-out infinite; }
+.momentum-decline { animation: decline-sink 1.5s ease-in-out infinite; }
+.momentum-ice { animation: ice-shimmer 2s ease-in-out infinite; }
+.momentum-up { animation: momentum-glow-up 2s ease-in-out infinite; }
+.momentum-down { animation: momentum-glow-down 2s ease-in-out infinite; }
 
-/* === NEWS TICKER === */
+/* === NEWS TICKER — BOLD === */
 @keyframes ticker-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 .ticker-scroll {
-  animation: ticker-scroll 40s linear infinite;
+  animation: ticker-scroll 60s linear infinite;
 }
 .ticker-scroll:hover {
   animation-play-state: paused;
@@ -136,8 +161,8 @@ body {
 
 /* === BROADCAST HEADER BAR === */
 .broadcast-bar {
-  background: linear-gradient(90deg, var(--color-bg-primary) 0%, var(--color-bg-card) 20%, var(--color-bg-card) 80%, var(--color-bg-primary) 100%);
-  border-bottom: 2px solid var(--color-gold);
+  background: linear-gradient(90deg, var(--color-bg-primary) 0%, #161616 20%, #161616 80%, var(--color-bg-primary) 100%);
+  border-bottom: 3px solid var(--color-gold);
 }
 
 /* === LEADERBOARD ROW — TV GRAPHIC STYLE === */
@@ -147,33 +172,33 @@ body {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .leaderboard-row:hover {
-  background: linear-gradient(90deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.02) 60%, transparent 100%);
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.04) 60%, transparent 100%);
   border-left-color: var(--color-gold);
 }
 .leaderboard-row-leader {
-  background: linear-gradient(90deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.02) 40%, transparent 100%);
-  border-left: 3px solid var(--color-gold);
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.04) 40%, transparent 100%);
+  border-left: 4px solid var(--color-gold);
 }
 
 /* === STAT PILL === */
 .stat-pill {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--color-border);
   backdrop-filter: blur(8px);
   transition: all 0.2s ease;
 }
 .stat-pill:hover {
   border-color: var(--color-border-bright);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
 }
 
-/* === LIVE BADGE === */
+/* === LIVE BADGE — BOLD === */
 @keyframes live-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
 }
 .live-dot {
-  animation: live-dot 1.5s ease-in-out infinite;
+  animation: live-dot 1.2s ease-in-out infinite;
 }
 
 /* === FORM ELEMENTS (dark broadcast) === */
@@ -182,21 +207,48 @@ select, input[type="date"] {
 }
 
 /* === SCROLLBAR === */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--color-border-bright); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-gold-dark); }
 
-/* === SECTION LABEL — broadcast style header chip === */
+/* === SECTION LABEL — broadcast header chip === */
 .section-label {
   font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.65rem;
+  font-weight: 900;
+  font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--color-gold);
-  background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  padding: 0.25rem 0.75rem;
+  background: rgba(212, 175, 55, 0.15);
+  border: 2px solid rgba(212, 175, 55, 0.35);
+  padding: 0.35rem 0.85rem;
   display: inline-block;
+}
+
+/* === ARCHETYPE BADGE === */
+.archetype-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  border: 2px solid;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* === BROADCAST PANEL — grouped container === */
+.broadcast-panel {
+  background: var(--color-bg-panel);
+  border: 2px solid var(--color-border);
+  padding: 1.5rem;
+}
+
+/* === GOLD DIVIDER === */
+.gold-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-gold) 20%, var(--color-gold) 80%, transparent 100%);
+  opacity: 0.4;
 }

@@ -112,24 +112,24 @@ export default function LandingPage() {
         transition={{ duration: 0.8 }}
         className="relative flex-1 flex items-center justify-center py-16 md:py-24"
       >
-        {/* Subtle grid background */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
+        {/* Grid background — VISIBLE */}
+        <div className="absolute inset-0 opacity-[0.07]" style={{
           backgroundImage: "linear-gradient(var(--color-gold) 1px, transparent 1px), linear-gradient(90deg, var(--color-gold) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
+          backgroundSize: "80px 80px",
         }} />
 
-        {/* Radial glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/[0.02] rounded-full blur-3xl" />
+        {/* Radial glow — PROMINENT */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/[0.06] rounded-full blur-3xl" />
 
         <div className="relative text-center max-w-4xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 bg-gold/5 border border-gold/20 mb-8"
+            className="inline-flex items-center gap-2.5 px-5 py-2 bg-gold/15 border-2 border-gold/35 mb-8"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-green live-dot" />
-            <span className="text-[10px] font-black tracking-[0.2em] text-gold uppercase">
+            <span className="w-2.5 h-2.5 rounded-full bg-accent-green live-dot" />
+            <span className="text-[11px] font-black tracking-[0.2em] text-gold uppercase">
               Season Active — Live Analytics
             </span>
           </motion.div>
@@ -160,7 +160,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-text-muted text-xs max-w-xl mx-auto mb-10 leading-relaxed"
+            className="text-text-secondary text-xs max-w-xl mx-auto mb-10 leading-relaxed"
           >
             Proprietary Elo-derived ratings. 10,000 Monte Carlo simulations. Psychological warfare metrics.
             A level of statistical rigour that is, by any reasonable measure, entirely unnecessary
@@ -174,7 +174,7 @@ export default function LandingPage() {
           >
             <Link
               href="/dashboard"
-              className="inline-block bg-gold text-bg-primary font-black py-4 px-12 text-base tracking-[0.15em] uppercase hover:bg-gold-light transition-colors shadow-[0_0_40px_rgba(212,175,55,0.2)] hover:shadow-[0_0_60px_rgba(212,175,55,0.3)]"
+              className="inline-block bg-gold text-bg-primary font-black py-4.5 px-14 text-lg tracking-[0.15em] uppercase hover:bg-gold-light transition-all shadow-[0_0_50px_rgba(212,175,55,0.3),0_0_100px_rgba(212,175,55,0.15)] hover:shadow-[0_0_70px_rgba(212,175,55,0.5),0_0_120px_rgba(212,175,55,0.25)] hover:scale-[1.02]"
             >
               Enter the Arena
             </Link>

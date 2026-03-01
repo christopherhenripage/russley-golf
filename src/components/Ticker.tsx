@@ -6,50 +6,47 @@ function generatePlayerHeadlines(analytics: PlayerAnalytics[]): string[] {
   const headlines: string[] = [];
   const ranked = [...analytics].sort((a, b) => b.rpr - a.rpr);
 
-  // Player-specific headlines
   for (const p of analytics) {
     if (p.performanceState === "Heater") {
-      headlines.push(`🔥 ${p.playerName.toUpperCase()}'s RPR trajectory classified as "unsustainable" by three independent models`);
+      headlines.push(`🔥 BREAKING: ${p.playerName.toUpperCase()}'s RPR trajectory classified as "UNSUSTAINABLE" by three independent models. Analytics Desk cites "unprecedented thermal output."`);
     }
     if (p.performanceState === "Chaos Merchant") {
-      headlines.push(`🌪️ ALERT: ${p.playerName.toUpperCase()}'s Volatility Index has triggered a formal review by the Analytics Desk`);
+      headlines.push(`🌪️ ALERT: ${p.playerName.toUpperCase()}'s Volatility Index (${p.volatility.toFixed(2)}σ) has triggered FOUR separate circuit breakers. Our prediction models are "asking questions."`);
     }
     if (p.performanceState === "Regression Watch") {
-      headlines.push(`📉 DEVELOPING: ${p.playerName.toUpperCase()} enters Regression Watch — Momentum Vector negative for consecutive weeks`);
+      headlines.push(`📉 DEVELOPING: ${p.playerName.toUpperCase()} enters formal REGRESSION WATCH — Momentum Vector has been negative for consecutive weeks. The Performance Index does not forget.`);
     }
     if (p.recentShock === "Historic Collapse") {
-      headlines.push(`🚨 BREAKING: ${p.playerName.toUpperCase()}'s last round classified as HISTORIC COLLAPSE — Performance Forensics team deployed`);
+      headlines.push(`🚨 HISTORIC COLLAPSE: ${p.playerName.toUpperCase()}'s last round triggered a >2σ deviation alert. Performance Forensics team has been deployed. This is not a drill.`);
     }
     if (p.recentShock === "Statistical Event") {
-      headlines.push(`⚠️ ${p.playerName.toUpperCase()} generates Statistical Anomaly — prediction models scrambling to recalibrate`);
+      headlines.push(`⚠️ STATISTICAL ANOMALY: ${p.playerName.toUpperCase()} generates data point that has broken the prediction model. Recalibration in progress.`);
     }
   }
 
-  // Leader-specific
   if (ranked[0]) {
-    headlines.push(`🏆 ${ranked[0].playerName.toUpperCase()} maintains stranglehold on #1 — RPR ${ranked[0].rpr.toFixed(0)} — sources say rivals are "concerned"`);
+    headlines.push(`🏆 ${ranked[0].playerName.toUpperCase()} maintains STRANGLEHOLD on #1 with RPR ${ranked[0].rpr.toFixed(0)} — sources close to the leaderboard say rivals are "deeply concerned"`);
   }
 
-  // Rivalry headline
   if (ranked.length >= 2) {
     const gap = ranked[0].rpr - ranked[1].rpr;
     if (gap < 30) {
-      headlines.push(`⚔️ TITLE RACE: Only ${gap.toFixed(0)} RPR separating ${ranked[0].playerName} and ${ranked[1].playerName} — the models are calling this "a coin flip with extra steps"`);
+      headlines.push(`⚔️ TITLE RACE INTENSIFIES: Only ${gap.toFixed(0)} RPR points separate ${ranked[0].playerName} and ${ranked[1].playerName} — senior analysts describe this as "a knife fight in a phone booth"`);
     }
   }
 
   return headlines;
 }
 
-const STATIC_HEADLINES = [
-  "SOURCES: Performance Forensics Team has been deployed to Russley Golf Club",
-  "BREAKING: Monte Carlo engine requests additional compute budget after latest results",
-  "DEVELOPING: Psychological Warfare Division confirms 'things are getting personal'",
-  "EXCLUSIVE: Senior analyst describes current RPR distribution as 'frankly threatening'",
-  "REPORT: The algorithms are watching. The algorithms are always watching.",
-  "UNCONFIRMED: A player's regression coefficient has achieved sentience and is 'asking questions'",
-  "UPDATE: Course conditions classified as 'tactically hostile' by RSPI Intelligence Bureau",
-  "ALERT: Three-putt on 18 triggers automatic recalculation of 847 statistical parameters",
+const SHAME_FAME = [
+  "🚨 SOURCES: Performance Forensics Team deployed to Russley Golf Club after 'alarming data anomalies'",
+  "📊 BREAKING: Monte Carlo engine requests emergency compute budget — '10,000 simulations were not enough'",
+  "🧠 EXCLUSIVE: Psychological Warfare Division confirms rivalries have reached 'personal vendetta' classification",
+  "⚠️ REPORT: Senior analyst describes current RPR distribution as 'a statistical crime scene'",
+  "🔬 DEVELOPING: Three-putt on 18 triggers automatic recalculation of 847 statistical parameters across all models",
+  "📡 ALERT: The algorithms are watching. The algorithms are ALWAYS watching. This has been a public service announcement.",
+  "🧬 UNCONFIRMED: A player's regression coefficient has achieved sentience and is 'filing formal complaints'",
+  "🌊 UPDATE: Course conditions reclassified from 'challenging' to 'TACTICALLY HOSTILE' by Intelligence Bureau",
 ];
 
 export default function Ticker({
@@ -64,29 +61,31 @@ export default function Ticker({
   const playerHeadlines = generatePlayerHeadlines(analytics);
 
   const items = [
-    `RSPI POWER RANKING: ${ranked.map((p, i) => `#${i + 1} ${p.playerName}`).join(" | ")}`,
-    ...playerHeadlines.slice(0, 4),
+    `RSPI POWER RANKING: ${ranked.map((p, i) => `#${i + 1} ${p.playerName} (${p.rpr.toFixed(0)})`).join(" | ")}`,
+    ...playerHeadlines,
     recap.momentumCommentary,
-    ...STATIC_HEADLINES.slice(0, 3),
-    `VOLATILITY WATCH: ${highVol?.playerName || "N/A"} leads at ${highVol?.volatility.toFixed(2) || "0"}σ — models recalibrating`,
-    ...recap.narratives.map((n) => n.substring(0, 140) + "..."),
+    ...SHAME_FAME,
+    `VOLATILITY LEADERBOARD: ${highVol?.playerName || "N/A"} leads at ${highVol?.volatility.toFixed(2) || "0"}σ — models recalibrating — confidence intervals widened`,
+    ...recap.narratives.map((n) => n.substring(0, 160) + "..."),
   ];
 
-  const tickerText = items.join("   ///   ");
+  const tickerText = items.join("     ///     ");
 
   return (
-    <div className="relative overflow-hidden bg-bg-surface border-y border-border py-2.5">
+    <div className="relative overflow-hidden bg-bg-surface border-y-2 border-gold/30 py-3">
       <div className="flex items-center">
-        <div className="shrink-0 flex items-center gap-1.5 px-4 border-r border-border mr-4">
-          <div className="w-1.5 h-1.5 rounded-full bg-alert-red live-dot" />
-          <span className="text-[9px] font-black tracking-[0.2em] text-alert-red uppercase">
+        {/* LIVE badge — large and bold */}
+        <div className="shrink-0 flex items-center gap-2 px-5 border-r-2 border-gold/30 mr-5">
+          <div className="w-3 h-3 rounded-full bg-alert-red live-dot" />
+          <span className="text-[12px] font-black tracking-[0.2em] text-alert-red uppercase">
             Live
           </span>
         </div>
+        {/* Scrolling text */}
         <div className="overflow-hidden whitespace-nowrap">
           <div className="ticker-scroll inline-block">
-            <span className="text-[11px] text-text-secondary font-medium tracking-wide">
-              {tickerText}&nbsp;&nbsp;&nbsp;///&nbsp;&nbsp;&nbsp;{tickerText}
+            <span className="text-[13px] text-text-secondary font-bold tracking-wide">
+              {tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;///&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}
             </span>
           </div>
         </div>
