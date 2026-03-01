@@ -85,6 +85,7 @@ export interface PlayerAnalytics {
   roundCount: number;
   careerAverage: number;
   bestAdjustedScore: number;
+  recentRprHistory: number[];
 }
 
 export type PerformanceState =

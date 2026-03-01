@@ -29,6 +29,16 @@ export async function GET() {
   const rounds = roundsRes.data as Round[];
   const ratingsHistory = ratingsRes.data as RatingSnapshot[];
 
+  // Group rating history by player (already sorted desc by date)
+  const rprHistoryByPlayer = new Map<string, number[]>();
+  for (const rh of ratingsHistory) {
+    if (!rprHistoryByPlayer.has(rh.player_id)) {
+      rprHistoryByPlayer.set(rh.player_id, []);
+    }
+    const arr = rprHistoryByPlayer.get(rh.player_id)!;
+    if (arr.length < 10) arr.push(rh.rpr);
+  }
+
   const analytics: PlayerAnalytics[] = players.map((player) => {
     const playerRounds = rounds.filter((r) => r.player_id === player.id);
     const adjustedRounds = buildAdjustedRounds(playerRounds, courses);
@@ -36,6 +46,7 @@ export async function GET() {
 
     const latestRating = ratingsHistory.find((r) => r.player_id === player.id);
     const rpr = latestRating?.rpr ?? 1500;
+    const recentRprHistory = (rprHistoryByPlayer.get(player.id) || [1500]).reverse();
 
     const rollingAvg = rollingWeightedAverage(adjScores);
     const vol = volatilityIndex(adjScores);
@@ -70,6 +81,7 @@ export async function GET() {
       roundCount: playerRounds.length,
       careerAverage: Math.round(careerAvg * 100) / 100,
       bestAdjustedScore: bestAdj,
+      recentRprHistory,
     };
   });
 

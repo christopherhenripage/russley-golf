@@ -82,6 +82,7 @@ export async function GET() {
       roundCount: playerRounds.length,
       careerAverage: Math.round(careerAvg * 100) / 100,
       bestAdjustedScore: adjScores.length > 0 ? Math.min(...adjScores) : 0,
+      recentRprHistory: [rpr],
     };
   });
 

@@ -176,7 +176,7 @@ export function courseStatsForPlayer(
     if (!grouped.has(key)) {
       grouped.set(key, { name: ar.course.name, scores: [] });
     }
-    grouped.get(key)!.scores.push(ar.round.score);
+    grouped.get(key)!.scores.push(ar.adjustedScore);
   }
   return Array.from(grouped.entries()).map(([courseId, { name, scores }]) => ({
     courseId,

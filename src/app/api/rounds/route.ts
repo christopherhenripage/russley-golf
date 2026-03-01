@@ -4,6 +4,11 @@ import { updateRatings } from "@/lib/ratings";
 import {
   volatilityIndex,
   momentum,
+  shockFactor,
+  shockLabel,
+  performanceState,
+  careerAverage,
+  rollingWeightedAverage,
   buildAdjustedRounds,
 } from "@/lib/analytics";
 import type { Course, Round, RatingSnapshot } from "@/lib/types";
@@ -110,5 +115,55 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  return NextResponse.json({ success: true, round });
+  // Compute impact data for the submitting player
+  const oldRpr = currentRatings.get(player_id) ?? 1500;
+  const newRpr = newRatings.get(player_id) ?? 1500;
+
+  // Compute ranks
+  const allPlayerIds = [...new Set([...currentRatings.keys(), ...newRatings.keys()])];
+  const oldRanked = allPlayerIds
+    .map((pid) => ({ pid, rpr: currentRatings.get(pid) ?? 1500 }))
+    .sort((a, b) => b.rpr - a.rpr);
+  const newRanked = allPlayerIds
+    .map((pid) => ({ pid, rpr: newRatings.get(pid) ?? 1500 }))
+    .sort((a, b) => b.rpr - a.rpr);
+  const oldRank = oldRanked.findIndex((r) => r.pid === player_id) + 1;
+  const newRank = newRanked.findIndex((r) => r.pid === player_id) + 1;
+
+  // Shock classification
+  const predicted = adjScores.length >= 2
+    ? rollingWeightedAverage(adjScores.slice(1))
+    : adjScores[0] ?? score;
+  const shock = vol > 0 ? shockFactor(adjScores[0], predicted, vol) : 0;
+  const shockClass = shockLabel(shock);
+
+  // Performance state
+  const careerAvg = careerAverage(adjScores);
+  const recentForm = adjScores.length >= 3
+    ? adjScores.slice(0, 3).reduce((a, b) => a + b, 0) / 3
+    : careerAvg;
+  const state = performanceState(mom, vol, recentForm, careerAvg);
+
+  // Get player name
+  const { data: playerData } = await supabase
+    .from("players")
+    .select("name")
+    .eq("id", player_id)
+    .single();
+
+  return NextResponse.json({
+    success: true,
+    round,
+    impact: {
+      playerName: playerData?.name || "Unknown",
+      oldRpr: Math.round(oldRpr * 100) / 100,
+      newRpr: Math.round(newRpr * 100) / 100,
+      rprDelta: Math.round((newRpr - oldRpr) * 100) / 100,
+      oldRank,
+      newRank,
+      shockClassification: shockClass,
+      performanceState: state,
+      score,
+    },
+  });
 }

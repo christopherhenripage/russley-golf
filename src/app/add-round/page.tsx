@@ -1,12 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import type { Player, Course } from "@/lib/types";
+import BroadcastReveal from "@/components/BroadcastReveal";
+
+interface ImpactData {
+  playerName: string;
+  oldRpr: number;
+  newRpr: number;
+  rprDelta: number;
+  oldRank: number;
+  newRank: number;
+  shockClassification: string;
+  performanceState: string;
+  score: number;
+}
 
 export default function AddRoundPage() {
-  const router = useRouter();
   const [players, setPlayers] = useState<Player[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [playerId, setPlayerId] = useState("");
@@ -14,8 +25,8 @@ export default function AddRoundPage() {
   const [score, setScore] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [impact, setImpact] = useState<ImpactData | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -31,7 +42,6 @@ export default function AddRoundPage() {
     e.preventDefault();
     setSubmitting(true);
     setError("");
-    setSuccess(false);
 
     const res = await fetch("/api/rounds", {
       method: "POST",
@@ -45,14 +55,20 @@ export default function AddRoundPage() {
     });
 
     if (res.ok) {
-      setSuccess(true);
-      setScore("");
-      setTimeout(() => router.push("/"), 1500);
+      const data = await res.json();
+      if (data.impact) {
+        setImpact(data.impact);
+      }
     } else {
       const data = await res.json();
       setError(data.error || "Failed to submit intelligence");
     }
     setSubmitting(false);
+  }
+
+  // Show broadcast reveal if we have impact data
+  if (impact) {
+    return <BroadcastReveal impact={impact} />;
   }
 
   return (
@@ -68,7 +84,7 @@ export default function AddRoundPage() {
           <span className="section-label">Submit Field Intelligence</span>
           <h1 className="text-2xl font-black mt-3 tracking-tight">Record Tactical Output</h1>
           <p className="text-text-muted text-[10px] tracking-[0.12em] uppercase mt-2">
-            All analytics engines will recalibrate upon submission. Monte Carlo simulations will re-execute.
+            All analytics engines will recalibrate upon submission.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5 mt-6">
@@ -142,16 +158,6 @@ export default function AddRoundPage() {
             >
               {submitting ? "Transmitting Intelligence..." : "Submit to the Index"}
             </button>
-
-            {success && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-perf-green/5 border border-perf-green/30 text-perf-green rounded-sm p-4 text-[10px] text-center font-bold tracking-[0.15em] uppercase"
-              >
-                Intel received. All systems recalibrating. Redirecting to Command Centre...
-              </motion.div>
-            )}
 
             {error && (
               <motion.div

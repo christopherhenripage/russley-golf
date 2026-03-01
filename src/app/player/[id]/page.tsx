@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import RivalryMatrix from "@/components/RivalryMatrix";
+import Sparkline from "@/components/Sparkline";
 import type { RivalryRecord, CourseStats, SimulationResult } from "@/lib/types";
 
 interface PlayerDetail {
@@ -49,6 +50,7 @@ export default function PlayerPage() {
   const playerId = params.id as string;
   const [data, setData] = useState<PlayerDetail | null>(null);
   const [simData, setSimData] = useState<SimulationResult | null>(null);
+  const [playerNameMap, setPlayerNameMap] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,10 +59,10 @@ export default function PlayerPage() {
       fetch("/api/simulation").then((r) => r.json()),
     ]).then(([playerData, simResults]) => {
       setData(playerData);
-      const playerSim = (simResults as SimulationResult[]).find(
-        (s) => s.playerId === playerId
-      );
+      const allSims = simResults as SimulationResult[];
+      const playerSim = allSims.find((s) => s.playerId === playerId);
       setSimData(playerSim ?? null);
+      setPlayerNameMap(new Map(allSims.map((s) => [s.playerId, s.playerName])));
       setLoading(false);
     });
   }, [playerId]);
@@ -84,7 +86,7 @@ export default function PlayerPage() {
     return <div className="text-center text-text-muted py-20 text-sm tracking-wider uppercase">Competitor Not Found In Database</div>;
   }
 
-  const { player, analytics, courseStats, courseIntelligence, rivalries, roundHistory } = data;
+  const { player, analytics, courseStats, courseIntelligence, rivalries, ratingHistory, roundHistory } = data;
   const archetype = ARCHETYPE_CONFIG[analytics.performanceState] || ARCHETYPE_CONFIG["Stable Veteran"];
 
   // Volatility gauge percentage
@@ -286,7 +288,7 @@ export default function PlayerPage() {
                 </div>
                 {Object.entries(simData.beatProbabilities).map(([oppId, prob]) => (
                   <div key={oppId} className="flex items-center justify-between">
-                    <span className="text-text-muted text-[10px]">vs opponent</span>
+                    <span className="text-text-muted text-[10px]">vs {playerNameMap.get(oppId) || "Unknown"}</span>
                     <span className={`font-black tabular-nums text-sm ${prob > 50 ? "text-perf-green" : "text-accent-red"}`}>
                       {prob.toFixed(1)}%
                     </span>
@@ -335,6 +337,46 @@ export default function PlayerPage() {
           </motion.div>
         </div>
       </div>
+
+      {/* RPR TREND */}
+      {ratingHistory.length >= 2 && (
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="card-broadcast rounded-sm p-5"
+        >
+          <span className="section-label">RPR Trajectory</span>
+          <div className="mt-4 overflow-hidden">
+            <div className="w-full">
+              <svg viewBox="0 0 600 80" className="w-full h-auto" preserveAspectRatio="none">
+                {(() => {
+                  const data = ratingHistory.map((r) => r.rpr);
+                  const min = Math.min(...data);
+                  const max = Math.max(...data);
+                  const range = max - min || 1;
+                  const points = data.map((val, i) => {
+                    const x = (i / (data.length - 1)) * 596 + 2;
+                    const y = 78 - ((val - min) / range) * 76;
+                    return `${x},${y}`;
+                  });
+                  const last = points[points.length - 1].split(",");
+                  return (
+                    <>
+                      <polyline points={points.join(" ")} fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+                      <circle cx={last[0]} cy={last[1]} r="4" fill="#D4AF37" />
+                    </>
+                  );
+                })()}
+              </svg>
+            </div>
+            <div className="flex justify-between mt-2 text-[9px] text-text-muted tracking-wider">
+              <span>{ratingHistory[0]?.date}</span>
+              <span>{ratingHistory[ratingHistory.length - 1]?.date}</span>
+            </div>
+          </div>
+        </motion.section>
+      )}
 
       {/* PSYCHOLOGICAL WARFARE MATRIX */}
       <motion.section
